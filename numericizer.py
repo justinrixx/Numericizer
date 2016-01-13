@@ -14,8 +14,6 @@ import numpy as np
 
 def main(argv):
     # Get the source and destination files
-    srcfile = ""
-    dstfile = ""
 
     if len(argv) == 3:
         srcfile = argv[1]
@@ -31,8 +29,7 @@ def main(argv):
     non_numeric_columns = []
     # look for non-numeric columns we need clarification for
     for i, attribute in enumerate(columns):
-        if not is_number(attribute):
-            non_numeric_columns.append(i)
+        non_numeric_columns.append(i)
 
     sets = []
     # create an empty set for each non-numeric column
@@ -46,40 +43,49 @@ def main(argv):
 
     # next get user clarification
     for i, column in enumerate(non_numeric_columns):
-        print("Is there a natural order to these values?")
+
+        is_non_numeric = False
 
         for value in sets[i]:
-            print(value)
+            if not is_number(value):
+                is_non_numeric = True
 
-        choice = input("[y/n]")
+        if is_non_numeric:
+            print("Is there a natural order to these values?")
 
-        change = {}
-
-        # get the user's choice
-        if choice.upper() == "Y":
             for value in sets[i]:
-                number = input("Enter a number corresponding to" + value)
-                change[value] = number
+                print(value)
 
-        # just enumerate (0, 1, 2 ...)
-        else:
-            for j, value in enumerate(sets[i]):
-                change[value] = j
+            choice = input("[y/n]")
 
-        # propagate the request
-        for instance in csv:
-            for key, value in change.items():
-                if instance[column] == key:
-                    instance[column] = value
+            change = {}
+
+            # get the user's choice
+            if choice.upper() == "Y":
+                for value in sets[i]:
+                    number = input("Enter a number corresponding to " + value + " ")
+                    change[value] = number
+
+            # just enumerate (0, 1, 2 ...)
+            else:
+                for j, value in enumerate(sets[i]):
+                    change[value] = j
+
+            # propagate the request
+            for instance in csv:
+                for key, value in change.items():
+                    if instance[column] == key:
+                        instance[column] = value
 
     # what column is the target in?
-    i_target = int(input("Which column contains the target values (0 indexed please)." +
-                         "If the target is in the last column, just press ENTER: "))
+    i_target = input("Which column contains the target values (0 indexed please)." +
+                     "If the target is in the last column, just press ENTER: ")
 
     if i_target != "":
         # move the target column to the rightmost position
         # this is a fancy trick I borrowed from stackoverflow
         # http://stackoverflow.com/questions/20265229/rearrange-columns-of-numpy-2d-array
+        i_target = int(i_target)
         length = len(csv[0])
         new_positions = np.arange(length)
         for i in range(length):
