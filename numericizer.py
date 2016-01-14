@@ -66,10 +66,10 @@ def main(argv):
                     number = input("Enter a number corresponding to " + value + " ")
                     change[value] = number
 
-            # just enumerate (0, 1, 2 ...)
+            # data with no natural order become negative (-1, -2, -3 ...)
             else:
                 for j, value in enumerate(sets[i]):
-                    change[value] = j
+                    change[value] = -j - 1
 
             # propagate the request
             for instance in csv:
